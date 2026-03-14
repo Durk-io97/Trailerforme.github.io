@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrailerforMe — Stream & Discover</title>
+<meta name="description" content="Discover movies by mood. Spin a random trailer based on how you feel right now.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════
+   TRAILERFOR.ME — PRIME x HULU THEME
+   ═══════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Prime Video Dark Theme */
+  --bg-base: #0f171e;
+  --bg-nav: rgba(15, 23, 30, 0.85);
+  --bg-card: #1a242f;
+  --bg-card-hover: #252f39;
+  
+  /* Hulu & Prime Accents */
+  --accent: #1ce783; /* Hulu Green */
+  --accent-hover: #17c670;
+  --accent-text: #0f171e;
+  --accent-glow: rgba(28, 231, 131, 0.25);
+  
+  --prime-blue: #00A8E1;
+  --prime-blue-hover: #008fbf;
+  --netflix-red: #E50914;
+
+  /* Typography & Layout */
+  --text-main: #ffffff;
+  --text-muted: #8197a4;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(255, 255, 255, 0.25);
+  
+  --font-h: 'Syne', sans-serif;
+  --font-b: 'DM Sans', sans-serif;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg-base);
+  color:var(--text-main);
+  font-family:var(--font-b);
+  font-size:16px;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  padding:0 3rem;height:70px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg-nav);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  transition:all .3s;
+}
+.nav-logo{display:flex;align-items:center;gap:.6rem;cursor:pointer}
+.logo-icon{
+  width:36px;height:36px;border-radius:8px;
+  background:var(--accent);display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-h);font-weight:800;font-size:1rem;color:var(--accent-text);
+  box-shadow:0 0 16px var(--accent-glow);
+  flex-shrink:0;
+}
+.logo-text{font-family:var(--font-h);font-size:1.15rem;font-weight:800;letter-spacing:-0.02em}
+.logo-text span{color:var(--accent)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-size:.9rem;font-weight:500;color:var(--text-muted);transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--text-main)}
+.nav-right{display:flex;align-items:center;gap:.75rem}
+.btn-ghost-sm{
+  padding:.45rem 1.1rem;border:1px solid var(--border);border-radius:6px;
+  font-size:.85rem;font-weight:600;color:var(--text-main);background:transparent;
+  cursor:pointer;transition:all .2s;font-family:var(--font-b);
+}
+.btn-ghost-sm:hover{border-color:var(--text-main);background:rgba(255,255,255,0.05)}
+.btn-accent-sm{
+  padding:.45rem 1.25rem;background:var(--accent);border:none;border-radius:6px;
+  font-size:.85rem;font-weight:700;color:var(--accent-text);cursor:pointer;
+  transition:all .2s;font-family:var(--font-b);
+}
+.btn-accent-sm:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 4px 12px var(--accent-glow)}
+.ham{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.ham span{display:block;width:22px;height:2px;background:var(--text-main);transition:all .3s;border-radius:2px}
+
+/* MOBILE MENU */
+.mob-menu{
+  display:none;position:fixed;inset:0;z-index:490;
+  background:var(--bg-base);flex-direction:column;
+  justify-content:center;align-items:center;gap:2rem;
+}
+.mob-menu.open{display:flex}
+.mob-menu a{font-family:var(--font-h);font-size:2.5rem;font-weight:800;color:var(--text-muted);transition:color .2s}
+.mob-menu a:hover{color:var(--accent)}
+.mob-menu-actions{display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap;justify-content:center}
+
+/* PAGE SYSTEM */
+.page{display:none;padding-top:70px}
+.page.active{display:block;animation: fadeIn 0.4s ease forwards;}
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* BUTTONS */
+.btn-lg{
+  display:inline-flex;align-items:center;gap:.65rem;
+  padding:.9rem 2.5rem;border-radius:8px;
+  font-family:var(--font-h);font-size:1rem;font-weight:700;
+  cursor:pointer;transition:all .3s;border:none;
+}
+.btn-accent{background:var(--accent);color:var(--accent-text);box-shadow:0 4px 20px var(--accent-glow)}
+.btn-accent:hover{background:var(--accent-hover);transform:translateY(-2px);box-shadow:0 6px 24px rgba(28,231,131,.4)}
+.btn-outline{background:var(--bg-card);border:1px solid var(--border);color:var(--text-main)}
+.btn-outline:hover{border-color:var(--text-main);background:var(--bg-card-hover)}
+
+/* ─── HOME PAGE ─── */
+.hero{
+  min-height:90vh;display:flex;flex-direction:column;justify-content:center;
+  padding:2rem 3rem 4rem;position:relative;overflow:hidden;
+}
+.hero-glow{
+  position:absolute;top:-10%;right:-5%;width:700px;height:700px;
+  background:radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+  pointer-events:none; filter:blur(60px); opacity:0.6;
+}
+.hero-inner{max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1.2fr 1fr;gap:4rem;align-items:center;position:relative;z-index:2}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.3rem .85rem;background:rgba(28,231,131,0.1);border:1px solid rgba(28,231,131,0.2);
+  border-radius:999px;font-size:.75rem;font-weight:600;letter-spacing:.05em;
+  color:var(--accent);text-transform:uppercase;margin-bottom:1.5rem;
+}
+.hero-title{
+  font-family:var(--font-h);font-size:clamp(2.8rem,5vw,4.5rem);
+  font-weight:800;line-height:1.1;letter-spacing:-.03em;margin-bottom:1.5rem;
+}
+.hero-title span{color:var(--accent)}
+.hero-sub{font-size:1.1rem;font-weight:400;color:var(--text-muted);line-height:1.7;margin-bottom:2.5rem;max-width:480px}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:3rem}
+.hero-trust{display:flex;gap:2rem;flex-wrap:wrap}
+.trust-item{display:flex;align-items:center;gap:.5rem;font-size:.85rem;font-weight:600;color:var(--text-muted)}
+.trust-icon{width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#fff}
+.ti-n{background:var(--netflix-red)}
+.ti-p{background:var(--prime-blue)}
+
+/* SPIN CARD */
+.spin-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:16px;
+  padding:2.5rem 2rem;position:relative;overflow:hidden;
+  box-shadow:0 20px 40px rgba(0,0,0,0.5);
+}
+.spin-wheel{
+  width:200px;height:300px;border-radius:12px;
+  border:2px solid var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 1.5rem;
+  position:relative;
+  transition:transform .1s linear;
+  box-shadow:0 0 30px var(--accent-glow);
+  overflow:hidden;
+  background:var(--bg-base);
+}
+.spin-wheel-inner{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:4rem;
+}
+.spin-wheel-inner img { width:100%; height:100%; object-fit:cover; }
+.spin-card-title{font-family:var(--font-h);font-size:1.2rem;font-weight:700;text-align:center;margin-bottom:.5rem}
+.spin-card-sub{font-size:.9rem;color:var(--text-muted);text-align:center;margin-bottom:1.5rem;line-height:1.5}
+.spin-now-btn{
+  width:100%;padding:1rem;background:var(--prime-blue);border:none;border-radius:8px;
+  font-family:var(--font-h);font-size:1rem;font-weight:700;color:#fff;cursor:pointer;
+  transition:all .3s;
+}
+.spin-now-btn:hover{background:var(--prime-blue-hover);transform:translateY(-2px)}
+.time-context{
+  margin-top:1rem;padding:.75rem;background:rgba(255,255,255,0.03);border-radius:8px;
+  font-size:.8rem;color:var(--text-muted);display:flex;align-items:center;gap:.5rem;
+}
+
+/* SECTIONS */
+.section{padding:5rem 3rem;max-width:1200px;margin:0 auto}
+.section-header{margin-bottom:2.5rem}
+.sec-tag{font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+.sec-title{font-family:var(--font-h);font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;line-height:1.1;letter-spacing:-.02em}
+
+/* MOOD GRID */
+.mood-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:1rem}
+.mood-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
+  padding:1.5rem 1rem;text-align:center;cursor:pointer;
+  transition:all .3s;position:relative;
+}
+.mood-card:hover,.mood-card.active{border-color:var(--accent);transform:translateY(-4px);background:var(--bg-card-hover)}
+.mood-emoji{font-size:2rem;margin-bottom:.5rem}
+.mood-label{font-size:.85rem;font-weight:600;color:var(--text-main)}
+
+/* PILLS */
+.filter-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem}
+.fpill{
+  padding:.5rem 1.25rem;border:1px solid var(--border);border-radius:999px;
+  font-size:.85rem;font-weight:500;color:var(--text-muted);background:var(--bg-card);
+  cursor:pointer;transition:all .2s;font-family:var(--font-b);
+}
+.fpill:hover{border-color:var(--text-main);color:var(--text-main)}
+.fpill.active{background:var(--text-main);border-color:var(--text-main);color:var(--bg-base);font-weight:700}
+
+/* MOVIE RESULT MODAL */
+.modal-overlay{
+  position:fixed;inset:0;z-index:600;
+  background:rgba(15,23,30,.95);backdrop-filter:blur(10px);
+  display:none;align-items:center;justify-content:center;padding:1.5rem;
+}
+.modal-overlay.open{display:flex;animation:fadeIn 0.3s ease forwards}
+.modal{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:16px;
+  max-width:850px;width:100%;max-height:90vh;overflow-y:auto;
+  position:relative;box-shadow:0 25px 50px rgba(0,0,0,0.6);
+}
+.modal::-webkit-scrollbar{width:6px}
+.modal::-webkit-scrollbar-track{background:transparent}
+.modal::-webkit-scrollbar-thumb{background:var(--text-muted);border-radius:3px}
+.modal-close{
+  position:absolute;top:1rem;right:1rem;z-index:10;
+  width:36px;height:36px;border-radius:50%;border:none;
+  background:rgba(0,0,0,0.5);color:var(--text-main);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+  transition:all .2s; backdrop-filter:blur(4px);
+}
+.modal-close:hover{background:var(--accent);color:var(--accent-text)}
+.modal-hero{
+  height:350px;position:relative;overflow:hidden;
+  display:flex;align-items:flex-end;justify-content:center;padding:2rem;
+}
+.modal-hero-bg{
+  position:absolute;inset:-20px;background-size:cover;background-position:center;
+  filter:blur(20px) brightness(0.3);z-index:0;
+}
+.modal-poster{
+  height:280px;width:190px;object-fit:cover;
+  border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.8);
+  z-index:2; border:1px solid var(--border);
+}
+.modal-gradient{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(0deg, var(--bg-card) 0%, transparent 100%);
+}
+.modal-body{padding:2rem;position:relative;z-index:2}
+.modal-badges{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;justify-content:center}
+.mbadge{
+  padding:.3rem .75rem;border-radius:4px;font-size:.7rem;font-weight:700;
+  letter-spacing:.05em;text-transform:uppercase;
+}
+.mbadge-genre{background:rgba(255,255,255,0.1);color:var(--text-main)}
+.mbadge-year{background:transparent;border:1px solid var(--border);color:var(--text-muted)}
+.mbadge-netflix{background:var(--netflix-red);color:#fff}
+.mbadge-prime{background:var(--prime-blue);color:#fff}
+.mbadge-rt{background:#FA320A;color:#fff}
+
+.modal-title{font-family:var(--font-h);font-size:2.2rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.5rem;line-height:1.1;text-align:center}
+.modal-rating{display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:1.5rem}
+.stars{color:var(--accent);font-size:1rem;letter-spacing:.1em}
+.rating-num{font-size:.9rem;color:var(--text-muted);font-weight:600}
+.modal-desc{font-size:1rem;color:var(--text-muted);line-height:1.7;text-align:center;max-width:600px;margin:0 auto 2rem}
+
+.trailer-wrap{
+  border-radius:12px;overflow:hidden;margin-bottom:2rem;
+  background:var(--bg-base);aspect-ratio:16/9;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;cursor:pointer;border:1px solid var(--border);
+}
+.trailer-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,0.5);transition:background 0.3s;
+}
+.trailer-wrap:hover .trailer-overlay{background:rgba(0,0,0,0.3)}
+.play-btn{
+  position:absolute;width:64px;height:64px;border-radius:50%;
+  background:var(--accent);display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;color:var(--accent-text);box-shadow:0 0 30px var(--accent-glow);
+  transition:transform .3s;z-index:2;padding-left:4px; /* optical center */
+}
+.trailer-wrap:hover .play-btn{transform:scale(1.1)}
+
+/* Native Video Player styling */
+.os-video{
+  width:100%;height:100%;object-fit:contain;outline:none;background:#000;border-radius:12px;
+}
+
+.modal-actions{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+
+/* ANIMATIONS */
+@keyframes spinFast { 0%{transform:translateY(0)} 50%{transform:translateY(-10px)} 100%{transform:translateY(0)} }
+.spinning img { animation: spinFast 0.15s infinite; filter:blur(2px); }
+
+/* GRID CARDS (Prime/Hulu Style) */
+.movie-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.25rem}
+.movie-thumb{
+  border-radius:8px;overflow:hidden;position:relative;cursor:pointer;
+  aspect-ratio:2/3;transition:transform 0.3s ease, box-shadow 0.3s ease;
+  background:var(--bg-card);border:1px solid var(--border);
+}
+.movie-thumb:hover{transform:scale(1.05);box-shadow:0 15px 30px rgba(0,0,0,0.6);border-color:var(--accent)}
+.movie-thumb-img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s ease}
+.movie-thumb:hover .movie-thumb-img{transform:scale(1.05)}
+.movie-thumb-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top, rgba(15,23,30,0.95) 0%, rgba(15,23,30,0.4) 40%, transparent 100%);
+  opacity:0;transition:opacity .3s;display:flex;flex-direction:column;justify-content:space-between;padding:1rem;
+}
+.movie-thumb:hover .movie-thumb-overlay{opacity:1}
+.mto-play{
+  align-self:flex-end;width:36px;height:36px;border-radius:50%;
+  background:var(--accent);color:var(--accent-text);display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;padding-left:2px;box-shadow:0 4px 10px rgba(0,0,0,0.5);
+}
+.mto-name{font-family:var(--font-h);font-size:1rem;font-weight:700;line-height:1.2;color:var(--text-main)}
+.mto-genre{font-size:.75rem;color:var(--text-muted);margin-top:.3rem;font-weight:500}
+
+/* TRENDING ROW (Horizontal Scroll) */
+.trending-scroll{
+  display:flex;gap:1.25rem;overflow-x:auto;padding-bottom:1.5rem;scroll-snap-type:x mandatory;
+  scrollbar-width:thin;scrollbar-color:var(--text-muted) transparent;
+}
+.trending-scroll::-webkit-scrollbar{height:6px}
+.trending-scroll::-webkit-scrollbar-thumb{background:var(--text-muted);border-radius:3px}
+.trend-card{
+  min-width:180px;scroll-snap-align:start;
+  border-radius:8px;overflow:hidden;position:relative;cursor:pointer;
+  aspect-ratio:2/3;transition:all 0.3s;border:1px solid var(--border);flex-shrink:0;
+}
+.trend-card:hover{transform:scale(1.05);border-color:var(--accent);box-shadow:0 15px 30px rgba(0,0,0,0.6)}
+
+/* STORE PAGE */
+.store-hero{padding:6rem 3rem 3rem;text-align:center;position:relative}
+.store-title{font-family:var(--font-h);font-size:clamp(2.5rem,6vw,4rem);font-weight:800;letter-spacing:-.02em;margin-bottom:1rem}
+.store-title span{color:var(--prime-blue)}
+.store-sub{font-size:1.1rem;color:var(--text-muted);max-width:550px;margin:0 auto 3rem;line-height:1.6}
+.store-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:900px;margin:0 auto;padding:0 3rem 6rem}
+.store-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;transition:all .3s;position:relative;
+}
+.store-card:hover{transform:translateY(-5px);border-color:var(--text-main);box-shadow:0 20px 40px rgba(0,0,0,0.4)}
+.store-card-head{
+  height:160px;display:flex;align-items:center;justify-content:center;
+  font-size:3.5rem;position:relative;
+}
+.sc-netflix{background:linear-gradient(135deg, #4a0404, #000)}
+.sc-prime{background:linear-gradient(135deg, #00364d, #0f171e)}
+.store-card-body{padding:2rem}
+.sc-brand{font-family:var(--font-h);font-size:1.5rem;font-weight:800;margin-bottom:.5rem}
+.sc-desc{font-size:.9rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.6}
+.sc-price{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1.5rem;border-top:1px solid var(--border);padding-top:1.5rem}
+.sc-usd{font-family:var(--font-h);font-size:2.2rem;font-weight:800;line-height:1}
+.sc-tzs{font-size:.85rem;color:var(--text-muted);text-align:right}
+.sc-buy{
+  width:100%;padding:1rem;border:none;border-radius:8px;
+  font-family:var(--font-h);font-size:1rem;font-weight:700;color:#fff;cursor:pointer;
+  transition:all .3s;
+}
+.sc-buy-n{background:var(--netflix-red)}
+.sc-buy-n:hover{background:#ff2a35;transform:translateY(-2px)}
+.sc-buy-p{background:var(--prime-blue)}
+.sc-buy-p:hover{background:var(--prime-blue-hover);transform:translateY(-2px)}
+
+/* AUTH MODAL */
+.auth-modal{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:16px;
+  max-width:440px;width:100%;padding:2.5rem;position:relative;box-shadow:0 25px 50px rgba(0,0,0,0.7);
+}
+.auth-title{font-family:var(--font-h);font-size:1.8rem;font-weight:800;margin-bottom:.5rem}
+.auth-sub{font-size:.9rem;color:var(--text-muted);margin-bottom:2rem}
+.auth-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:2rem}
+.auth-tab{
+  flex:1;padding:.75rem;border:none;background:transparent;font-family:var(--font-b);
+  font-size:.9rem;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all .2s;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+}
+.auth-tab.active{color:var(--text-main);border-bottom-color:var(--accent)}
+.auth-form{display:none;flex-direction:column;gap:1.2rem}
+.auth-form.active{display:flex}
+.field-label{font-size:.75rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:.4rem;display:block}
+.field-input{
+  width:100%;background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:8px;
+  padding:.8rem 1rem;font-family:var(--font-b);font-size:1rem;color:var(--text-main);
+  outline:none;transition:border-color .2s;
+}
+.field-input:focus{border-color:var(--accent)}
+.auth-btn{
+  width:100%;padding:1rem;background:var(--accent);border:none;border-radius:8px;
+  font-family:var(--font-h);font-size:1rem;font-weight:700;color:var(--accent-text);cursor:pointer;
+  transition:all .3s;margin-top:.5rem;
+}
+.auth-btn:hover{background:var(--accent-hover)}
+
+/* STATS */
+.stats-band{
+  padding:3rem;background:var(--bg-card);border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+}
+.stats-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
+.stat-item{text-align:center}
+.stat-num{font-family:var(--font-h);font-size:3.5rem;font-weight:800;color:var(--text-main);line-height:1}
+.stat-label{font-size:.9rem;color:var(--text-muted);margin-top:.5rem;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+
+/* FOOTER */
+footer{background:var(--bg-base);border-top:1px solid var(--border);padding:4rem 3rem 2rem}
+.footer-inner{max-width:1200px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem;padding-bottom:3rem;border-bottom:1px solid var(--border)}
+.footer-brand p{font-size:.9rem;color:var(--text-muted);line-height:1.7;margin-top:1rem;max-width:280px}
+.footer-col h4{font-family:var(--font-h);font-size:1rem;font-weight:700;margin-bottom:1.2rem}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:.75rem}
+.footer-col ul li a{font-size:.9rem;color:var(--text-muted);transition:color .2s}
+.footer-col ul li a:hover{color:var(--text-main)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.85rem;color:var(--text-muted)}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);
+  background:var(--text-main);color:var(--bg-base);border-radius:8px;
+  padding:.85rem 1.5rem;font-size:.95rem;font-weight:700;
+  display:flex;align-items:center;gap:.75rem;z-index:800;
+  transition:transform .4s cubic-bezier(.16,1,.3,1);box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .hero-inner{grid-template-columns:1fr;text-align:center}
+  .hero-sub{margin:0 auto 2rem}
+  .hero-actions{justify-content:center}
+  .hero-trust{justify-content:center}
+  .spin-card{max-width:400px;margin:0 auto}
+  .footer-top{grid-template-columns:1fr 1fr}
+}
+@media(max-width:768px){
+  nav{padding:0 1.25rem}
+  .nav-links,.nav-right{display:none}
+  .ham{display:flex}
+  .hero{padding:2rem 1.25rem 3rem}
+  .section{padding:4rem 1.25rem}
+  .mood-grid{grid-template-columns:repeat(3,1fr)}
+  .movie-grid{grid-template-columns:repeat(2,1fr)}
+  .stats-inner{grid-template-columns:1fr;gap:3rem}
+  .store-grid{grid-template-columns:1fr}
+  .footer-top{grid-template-columns:1fr;gap:2rem}
+  footer{padding:3rem 1.25rem 1.5rem}
+  .modal-hero{height:250px}
+  .modal-poster{height:200px;width:135px}
+  .modal-title{font-size:1.6rem}
+}
+@media(max-width:480px){
+  .mood-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo" onclick="showPage('home', document.querySelector('.nav-links a'))">
+    <div class="logo-icon">▶</div>
+    <div class="logo-text">Trailer<span>forMe</span></div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#" class="active" onclick="showPage('home',this)">Home</a></li>
+    <li><a href="#" onclick="scrollToSection('trending')">Trending</a></li>
+    <li><a href="#" onclick="showPage('store',this)">Plans</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="btn-ghost-sm" onclick="openAuth('login')">Log In</button>
+    <button class="btn-accent-sm" onclick="openAuth('register')">Sign Up</button>
+  </div>
+  <button class="ham" id="ham" aria-label="Menu" onclick="toggleMob()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mobnav">
+  <a href="#" onclick="showPage('home',null);toggleMob()">Home</a>
+  <a href="#" onclick="scrollToSection('trending');toggleMob()">Trending</a>
+  <a href="#" onclick="showPage('store',null);toggleMob()">Plans</a>
+  <div class="mob-menu-actions">
+    <button class="btn-ghost-sm" onclick="openAuth('login');toggleMob()">Log In</button>
+    <button class="btn-accent-sm" onclick="openAuth('register');toggleMob()">Sign Up</button>
+  </div>
+</div>
+
+<!-- ═══ HOME PAGE ═══ -->
+<div id="page-home" class="page active">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge">Discover By Mood</div>
+        <h1 class="hero-title">
+          Spin a trailer<br>
+          <span>based on</span><br>
+          how you feel
+        </h1>
+        <p class="hero-sub">
+          Stop endlessly scrolling. Tell us your vibe — we'll find the perfect movie instantly. Ready to stream on Netflix & Prime Video.
+        </p>
+        <div class="hero-actions">
+          <button class="btn-lg btn-accent" onclick="spinRandom()">
+            ▶ Spin a Movie
+          </button>
+          <button class="btn-lg btn-outline" onclick="scrollToSection('filters')">
+            Filter by Mood
+          </button>
+        </div>
+        <div class="hero-trust">
+          <div class="trust-item"><div class="trust-icon ti-n">N</div>Netflix</div>
+          <div class="trust-item"><div class="trust-icon ti-p">P</div>Prime</div>
+          <div class="trust-item">🎬 500+ Movies</div>
+        </div>
+      </div>
+      <div>
+        <div class="spin-card">
+          <div class="spin-card-title">Your Next Favorite Movie</div>
+          <div class="spin-card-sub">Let fate decide your watchline.</div>
+          <div class="spin-wheel" id="spinWheel">
+            <div class="spin-wheel-inner" id="spinWheelInner">
+              <img src="https://image.tmdb.org/t/p/w500/8jdRxm33wtjAEdnE2Z0tL0X2JbH.jpg" alt="Spinning" id="spinImg">
+            </div>
+          </div>
+          <button class="spin-now-btn" onclick="spinRandom()">🎲 Spin Now</button>
+          <div class="time-context">
+            <span>🕐</span>
+            <span id="timeContext">Loading your context...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MOOD FILTERS -->
+  <div id="filters" class="section">
+    <div class="section-header">
+      <div class="sec-tag">Personalize</div>
+      <h2 class="sec-title">What's your <span>vibe</span> right now?</h2>
+    </div>
+    <div class="mood-grid" id="moodGrid">
+      <div class="mood-card" onclick="selectMood(this,'Happy')"><div class="mood-emoji">😄</div><div class="mood-label">Happy</div></div>
+      <div class="mood-card" onclick="selectMood(this,'Romantic')"><div class="mood-emoji">❤️</div><div class="mood-label">Romantic</div></div>
+      <div class="mood-card" onclick="selectMood(this,'Bored')"><div class="mood-emoji">😐</div><div class="mood-label">Bored</div></div>
+      <div class="mood-card" onclick="selectMood(this,'Sad')"><div class="mood-emoji">😢</div><div class="mood-label">Sad</div></div>
+      <div class="mood-card" onclick="selectMood(this,'Excited')"><div class="mood-emoji">🤩</div><div class="mood-label">Excited</div></div>
+      <div class="mood-card" onclick="selectMood(this,'Curious')"><div class="mood-emoji">🤔</div><div class="mood-label">Curious</div></div>
+    </div>
+
+    <div style="margin-top:2.5rem">
+      <div class="sec-tag">Genre</div>
+      <div class="filter-row" id="genreRow">
+        <button class="fpill active" onclick="selectGenre(this,'All')">All</button>
+        <button class="fpill" onclick="selectGenre(this,'Action')">Action</button>
+        <button class="fpill" onclick="selectGenre(this,'Comedy')">Comedy</button>
+        <button class="fpill" onclick="selectGenre(this,'Drama')">Drama</button>
+        <button class="fpill" onclick="selectGenre(this,'Horror')">Horror</button>
+        <button class="fpill" onclick="selectGenre(this,'Thriller')">Thriller</button>
+        <button class="fpill" onclick="selectGenre(this,'Sci-Fi')">Sci-Fi</button>
+      </div>
+    </div>
+
+    <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap">
+      <button class="btn-lg btn-accent" onclick="spinWithFilters()">Filter & Spin</button>
+      <button class="btn-lg btn-outline" onclick="resetFilters()">Reset</button>
+    </div>
+  </div>
+
+  <!-- TRENDING ROW -->
+  <div id="trending" class="section" style="padding-top:0">
+    <div class="section-header">
+      <div class="sec-tag">Trending</div>
+      <h2 class="sec-title">Popular This Week</h2>
+    </div>
+    <div class="trending-scroll" id="trendingRow"></div>
+  </div>
+
+  <!-- FEATURED GRID -->
+  <div class="section" style="padding-top:0">
+    <div class="section-header">
+      <div class="sec-tag">Browse</div>
+      <h2 class="sec-title">Top Picks For You</h2>
+    </div>
+    <div class="movie-grid" id="featuredGrid"></div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-band">
+    <div class="stats-inner">
+      <div class="stat-item">
+        <div class="stat-num" id="stat1">1.2k</div>
+        <div class="stat-label">Movies Available</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="stat2">50k+</div>
+        <div class="stat-label">Spins Today</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="stat3">24/7</div>
+        <div class="stat-label">Streaming Access</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══ STORE PAGE ═══ -->
+<div id="page-store" class="page">
+  <div class="store-hero">
+    <div class="sec-tag" style="justify-content:center">Premium Access</div>
+    <h1 class="store-title">Get Your <span>Streaming</span> Profile</h1>
+    <p class="store-sub">Instant full access to Netflix and Amazon Prime Video. Fast delivery via WhatsApp. Reliable & affordable.</p>
+  </div>
+
+  <div class="store-grid">
+    <div class="store-card">
+      <div class="store-card-head sc-netflix">
+        <div style="position:absolute;top:1rem;left:1rem;background:var(--netflix-red);color:#fff;padding:.3rem .8rem;border-radius:6px;font-size:.7rem;font-weight:800;letter-spacing:.08em">NETFLIX</div>
+        <span style="font-weight:800;color:#fff;letter-spacing:-2px">NETFLIX</span>
+      </div>
+      <div class="store-card-body">
+        <div class="sc-brand">Netflix Profile</div>
+        <div class="sc-desc">Full access profile. Watch on any device, anytime. HD & 4K quality unlocked.</div>
+        <div class="sc-price">
+          <div class="sc-usd">$5 <span style="font-size:1rem;color:var(--text-muted);font-weight:500">/ mo</span></div>
+          <div class="sc-tzs">≈ 13,000 TZS</div>
+        </div>
+        <button class="sc-buy sc-buy-n" onclick="buyProduct('Netflix Profile','$5 USD')">
+          Buy via WhatsApp
+        </button>
+      </div>
+    </div>
+
+    <div class="store-card">
+      <div class="store-card-head sc-prime">
+        <div style="position:absolute;top:1rem;left:1rem;background:var(--prime-blue);color:#fff;padding:.3rem .8rem;border-radius:6px;font-size:.7rem;font-weight:800;letter-spacing:.08em">PRIME</div>
+        <span style="font-weight:800;color:var(--prime-blue);letter-spacing:-1px">prime video</span>
+      </div>
+      <div class="store-card-body">
+        <div class="sc-brand">Amazon Prime Profile</div>
+        <div class="sc-desc">Full Amazon Prime Video access. Stream thousands of movies and TV shows ad-free.</div>
+        <div class="sc-price">
+          <div class="sc-usd">$3 <span style="font-size:1rem;color:var(--text-muted);font-weight:500">/ mo</span></div>
+          <div class="sc-tzs">≈ 7,800 TZS</div>
+        </div>
+        <button class="sc-buy sc-buy-p" onclick="buyProduct('Amazon Prime Profile','$3 USD')">
+          Buy via WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MOVIE RESULT MODAL -->
+<div class="modal-overlay" id="movieModal">
+  <div class="modal" id="movieModalInner">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-hero" id="modalHero">
+      <div class="modal-hero-bg" id="modalHeroBg"></div>
+      <div class="modal-gradient"></div>
+      <img class="modal-poster" id="modalPoster" src="" alt="Poster">
+    </div>
+    <div class="modal-body">
+      <div class="modal-badges" id="modalBadges"></div>
+      <h2 class="modal-title" id="modalTitle">Movie Title</h2>
+      <div class="modal-rating" id="modalRating"></div>
+      <p class="modal-desc" id="modalDesc">Movie description here.</p>
+      
+      <div class="trailer-wrap" id="trailerWrap">
+        <div class="trailer-overlay"></div>
+        <div class="play-btn" id="playBtn">▶</div>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn-lg btn-accent" onclick="spinRandom()" style="flex:1; justify-content:center">🎲 Spin Again</button>
+        <button class="btn-lg btn-outline" onclick="saveForLater()">🔖 Save to List</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="auth-modal">
+    <button class="modal-close" onclick="closeAuth()" style="top:1.5rem;right:1.5rem">✕</button>
+    <div class="auth-title">Welcome Back</div>
+    <div class="auth-sub">Sign in to save movies and personalize your spins.</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Log In</button>
+      <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Sign Up</button>
+    </div>
+    
+    <div class="auth-form active" id="form-login">
+      <div>
+        <label class="field-label">Email Address</label>
+        <input type="email" class="field-input" placeholder="name@example.com">
+      </div>
+      <div>
+        <label class="field-label">Password</label>
+        <input type="password" class="field-input" placeholder="••••••••">
+      </div>
+      <button class="auth-btn" onclick="handleLogin()">Log In</button>
+    </div>
+
+    <div class="auth-form" id="form-register">
+      <div>
+        <label class="field-label">Full Name</label>
+        <input type="text" class="field-input" placeholder="John Doe">
+      </div>
+      <div>
+        <label class="field-label">Email</label>
+        <input type="email" class="field-input" placeholder="name@example.com">
+      </div>
+      <div>
+        <label class="field-label">Password</label>
+        <input type="password" class="field-input" placeholder="Create a password">
+      </div>
+      <button class="auth-btn" onclick="handleRegister()">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toastIcon"></span>
+  <span id="toastMsg">Saved!</span>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo">
+          <div class="logo-icon" style="width:30px;height:30px;font-size:.8rem">▶</div>
+          <div class="logo-text" style="font-size:1rem;color:#fff">Trailer<span style="color:var(--accent)">forMe</span></div>
+        </div>
+        <p>Discover your next favorite movie by mood. Instant trailers, clean UI, tailored for you.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigate</h4>
+        <ul>
+          <li><a href="#" onclick="showPage('home',null)">Home</a></li>
+          <li><a href="#" onclick="scrollToSection('filters')">Mood Search</a></li>
+          <li><a href="#" onclick="showPage('store',null)">Pricing Plans</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Account</h4>
+        <ul>
+          <li><a href="#" onclick="openAuth('login')">Log In</a></li>
+          <li><a href="#" onclick="openAuth('register')">Sign Up</a></li>
+          <li><a href="#">My Watchlist</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal & Support</h4>
+        <ul>
+          <li><a href="https://wa.me/255656659537" target="_blank">WhatsApp Support</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 TrailerforMe. All Rights Reserved.</span>
+      <span>Support: <span style="color:var(--prime-blue)">+255 656 659 537</span></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ═══ MOVIE DATABASE (Rotten Tomatoes Certified Fresh & High Res Posters) ═══ 
+   Native open source video 1080p/720p trailers
+*/
+const movies = [
+  {
+    id: 1, title: "Parasite", genre: "Drama", year: 2019, rating: 9.9, rtScore: 99, mood: ["Curious", "Sad", "Excited"], platform: ["Prime"],
+    desc: "Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.",
+    poster: "https://image.tmdb.org/t/p/original/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
+    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"
+  },
+  {
+    id: 2, title: "Mad Max: Fury Road", genre: "Action", year: 2015, rating: 9.7, rtScore: 97, mood: ["Action", "Excited"], platform: ["Netflix"],
+    desc: "In a post-apocalyptic wasteland, a woman rebels against a tyrannical ruler in search for her homeland with the aid of a group of female prisoners.",
+    poster: "https://image.tmdb.org/t/p/original/8tZYtuWezp8JbcsvHYO0O46tFbo.jpg",
+    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+  },
+  {
+    id: 3, title: "Get Out", genre: "Horror", year: 2017, rating: 9.8, rtScore: 98, mood: ["Curious", "Excited"], platform: ["Prime"],
+    desc: "A young African-American visits his white girlfriend's parents for the weekend, where his heightened uneasiness about their reception to him reaches a boiling point.",
+    poster: "https://image.tmdb.org/t/p/original/tFXcEccSQAmRoIdcgGOScx3vhTv.jpg",
+    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"
+  },
+  {
+    id: 4, title: "Spider-Man: Into the Spider-Verse", genre: "Action", year: 2018, rating: 9.7, rtScore: 97, mood: ["Happy", "Excited"], platform: ["Netflix"],
+    desc: "Teen Miles Morales becomes the Spider-Man of his universe, and must join with five spider-powered individuals from other dimensions to stop a threat for all realities.",
+    poster: "https://image.tmdb.org/t/p/original/iiZZdoQBEYBv6id8su7ImL0oCbD.jpg",
+    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+  },
+  {
+    id: 5, title: "Knives Out", genre: "Comedy", year: 2019, rating: 9.7, rtScore: 97, mood: ["Curious", "Happy"], platform: ["Prime"],
+    desc: "A detective investigates the death of a patriarch of an eccentric, combative family. A brilliant modern whodunit.",
+    poster: "https://image.tmdb.org/t/p/original/pThyQovXQrwVmX9VNzS2x67bB2.jpg",
+    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"
+  },
+  {
+    id: 6, title: "Everything Everywhere All at Once", genre: "Sci-Fi", year: 2022, rating: 9.4, rtScore: 94, mood: ["Curious", "Action", "Happy"], platform: ["Prime"],
+    desc: "An aging Chinese immigrant is swept up in an insane adventure, where she alone can save the world by exploring other universes.",
+    poster: "https://image.tmdb.org/t/p/original/w3LxiVYdWWRvEVdn5RYq6jIqkb1.jpg",
+    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+  },
+  {
+    id: 7, title: "Lady Bird", genre: "Comedy", year: 2017, rating: 9.9, rtScore: 99, mood: ["Happy", "Sad"], platform: ["Netflix"],
+    desc: "In 2002, an artistically inclined seventeen-year-old girl comes of age in Sacramento, California.",
+    poster: "https://image.tmdb.org/t/p/original/iyrNf2B0B3xK9K12aB07T43j1z6.jpg",
+    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"
+  },
+  {
+    id: 8, title: "Mission: Impossible - Fallout", genre: "Action", year: 2018, rating: 9.7, rtScore: 97, mood: ["Action", "Excited"], platform: ["Prime"],
+    desc: "Ethan Hunt and his IMF team, along with some familiar allies, race against time after a mission goes wrong.",
+    poster: "https://image.tmdb.org/t/p/original/80PWnSTkygi3QWWmJ3hrAwqvLnO.jpg",
+    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+  },
+  {
+    id: 9, title: "Arrival", genre: "Sci-Fi", year: 2016, rating: 9.4, rtScore: 94, mood: ["Curious", "Sad"], platform: ["Prime"],
+    desc: "A linguist works with the military to communicate with alien lifeforms after twelve mysterious spacecraft appear around the world.",
+    poster: "https://image.tmdb.org/t/p/original/x2FJsf1ElAgr63Y3PNPtJrcmpoe.jpg",
+    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"
+  },
+  {
+    id: 10, title: "The Dark Knight", genre: "Action", year: 2008, rating: 9.4, rtScore: 94, mood: ["Action", "Excited"], platform: ["Netflix", "Prime"],
+    desc: "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological tests.",
+    poster: "https://image.tmdb.org/t/p/original/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"
+  },
+  {
+    id: 11, title: "Toy Story 4", genre: "Comedy", year: 2019, rating: 9.7, rtScore: 97, mood: ["Happy", "Sad"], platform: ["Netflix"],
+    desc: "When a new toy called Forky joins Woody and the gang, a road trip alongside old and new friends reveals how big the world can be for a toy.",
+    poster: "https://image.tmdb.org/t/p/original/w9kR8qbmQ01HwnvK4alvnQ2ca0L.jpg",
+    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+  },
+  {
+    id: 12, title: "Coco", genre: "Comedy", year: 2017, rating: 9.7, rtScore: 97, mood: ["Happy", "Sad"], platform: ["Netflix"],
+    desc: "Aspiring musician Miguel enters the Land of the Dead to find his great-great-grandfather, a legendary singer.",
+    poster: "https://image.tmdb.org/t/p/original/gGEsBPAijhVwFkReA3YvL7H1V2p.jpg",
+    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+  }
+];
+
+let selectedMood = null;
+let selectedGenre = 'All';
+let currentMovie = null;
+
+/* ─── TIME CONTEXT ─── */
+function getTimeContext(){
+  const h = new Date().getHours();
+  if(h >= 5 && h < 12) return `☀️ Morning picks: Comedies & Light Dramas`;
+  if(h >= 12 && h < 17) return `🌤️ Afternoon blockbusters: Action & Adventure`;
+  if(h >= 17 && h < 21) return `🌆 Evening unwind: Sci-Fi & Thrillers`;
+  return `🌙 Late night vibes: Horror & Intense Dramas`;
+}
+document.getElementById('timeContext').textContent = getTimeContext();
+
+/* ─── MOVIE SELECTION ─── */
+function getFilteredMovies(){
+  return movies.filter(m => {
+    const genreMatch = selectedGenre === 'All' || m.genre === selectedGenre;
+    const moodMatch = !selectedMood || m.mood.includes(selectedMood);
+    return genreMatch && moodMatch;
+  });
+}
+
+function pickMovie(){
+  let pool = getFilteredMovies();
+  if(!pool.length) pool = movies;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+/* ─── SPIN ─── */
+function spinRandom(){
+  const wheel = document.getElementById('spinWheel');
+  const imgEl = document.getElementById('spinImg');
+  
+  wheel.classList.remove('spinning');
+  void wheel.offsetWidth;
+  wheel.classList.add('spinning');
+  
+  let i = 0;
+  const interval = setInterval(() => {
+    imgEl.src = movies[i % movies.length].poster;
+    i++;
+  }, 100);
+
+  setTimeout(() => {
+    clearInterval(interval);
+    wheel.classList.remove('spinning');
+    const movie = pickMovie();
+    currentMovie = movie;
+    imgEl.src = movie.poster;
+    showMovie(movie);
+  }, 1800);
+}
+
+function spinWithFilters(){ spinRandom(); }
+
+function showMovie(movie){
+  document.getElementById('modalTitle').textContent = movie.title;
+  document.getElementById('modalDesc').textContent = movie.desc;
+  
+  // Set Images
+  document.getElementById('modalPoster').src = movie.poster;
+  document.getElementById('modalHeroBg').style.backgroundImage = `url(${movie.poster})`;
+  
+  // Badges + Rotten Tomatoes Score Addition
+  const badges = document.getElementById('modalBadges');
+  const platBadges = movie.platform.map(p => 
+    `<span class="mbadge ${p==='Netflix'?'mbadge-netflix':'mbadge-prime'}">${p}</span>`
+  ).join('');
+  
+  badges.innerHTML = `
+    <span class="mbadge mbadge-rt" style="background:#FA320A;color:#fff;">🍅 ${movie.rtScore}%</span>
+    <span class="mbadge mbadge-genre">${movie.genre}</span>
+    <span class="mbadge mbadge-year">${movie.year}</span>
+    ${platBadges}
+  `;
+  
+  // Rating (Star UI remains untouched as requested)
+  const ratingStars = '★'.repeat(Math.round(movie.rating/2)) + '☆'.repeat(5-Math.round(movie.rating/2));
+  document.getElementById('modalRating').innerHTML = `<span class="stars">${ratingStars}</span><span class="rating-num">${movie.rating} / 10</span>`;
+  
+  // NATIVE HTML5 Open-Source Video Trailer Setup
+  const trailerWrap = document.getElementById('trailerWrap');
+  
+  // Reset visual layout of trailer box to show the play button overlay
+  trailerWrap.innerHTML = `
+    <div class="trailer-overlay"></div>
+    <div class="play-btn" id="playBtn">▶</div>
+  `;
+  trailerWrap.style.backgroundImage = `url(${movie.poster})`;
+  trailerWrap.style.backgroundSize = 'cover';
+  trailerWrap.style.backgroundPosition = 'center 20%';
+  
+  trailerWrap.onclick = function(){
+    const playBtn = document.getElementById('playBtn');
+    if(playBtn) playBtn.style.display = 'none';
+    const overlay = document.querySelector('.trailer-overlay');
+    if(overlay) overlay.style.display = 'none';
+    
+    // Create native video element
+    const video = document.createElement('video');
+    video.src = movie.video;
+    video.className = 'os-video';
+    video.controls = true;
+    video.autoplay = true;
+    video.setAttribute('preload', 'auto');
+    
+    // Wipe background to show black video frame clearly
+    trailerWrap.style.backgroundImage = 'none';
+    trailerWrap.innerHTML = '';
+    trailerWrap.appendChild(video);
+    trailerWrap.onclick = null;
+  };
+  
+  document.getElementById('movieModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(){
+  document.getElementById('movieModal').classList.remove('open');
+  document.body.style.overflow = '';
+  
+  // Ensure native video stops playing when closing modal
+  const video = document.querySelector('.os-video');
+  if(video) {
+    video.pause();
+    video.remove();
+  }
+}
+
+/* ─── FILTERS ─── */
+function selectMood(el, mood){
+  document.querySelectorAll('.mood-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  selectedMood = mood;
+}
+
+function selectGenre(el, genre){
+  document.querySelectorAll('#genreRow .fpill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  selectedGenre = genre;
+}
+
+function resetFilters(){
+  selectedMood = null;
+  selectedGenre = 'All';
+  document.querySelectorAll('.mood-card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('#genreRow .fpill').forEach((p,i) => p.classList.toggle('active', i===0));
+  showToast('🔄','Filters have been reset.');
+}
+
+/* ─── RENDERERS ─── */
+function renderTrending(){
+  const row = document.getElementById('trendingRow');
+  const trending = [...movies].sort((a,b)=>b.rtScore - a.rtScore).slice(0,8);
+  row.innerHTML = trending.map(m => `
+    <div class="trend-card movie-thumb" onclick="showMovie(movies.find(x=>x.id==${m.id}))">
+      <img src="${m.poster}" class="movie-thumb-img" alt="${m.title}">
+      <div class="movie-thumb-overlay">
+        <div class="mto-play">▶</div>
+        <div>
+          <div class="mto-name">${m.title}</div>
+          <div class="mto-genre">${m.genre}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderFeatured(){
+  const grid = document.getElementById('featuredGrid');
+  const featured = [...movies].sort(()=>Math.random()-.5).slice(0,8);
+  grid.innerHTML = featured.map(m => `
+    <div class="movie-thumb" onclick="showMovie(movies.find(x=>x.id==${m.id}))">
+      <img src="${m.poster}" class="movie-thumb-img" alt="${m.title}">
+      <div class="movie-thumb-overlay">
+        <div class="mto-play">▶</div>
+        <div>
+          <div class="mto-name">${m.title}</div>
+          <div class="mto-genre">${m.genre} · ${m.year}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ─── SAVE FOR LATER ─── */
+function saveForLater(){
+  if(!currentMovie) return;
+  showToast('🔖',`"${currentMovie.title}" saved to your Watchlist!`);
+}
+
+/* ─── AUTH ─── */
+function openAuth(tab){
+  document.getElementById('authModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  switchTab(tab);
+}
+function closeAuth(){
+  document.getElementById('authModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function switchTab(tab){
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('form-'+tab).classList.add('active');
+}
+function handleLogin(){
+  showToast('✅','Welcome back! You are now logged in.');
+  closeAuth();
+  document.querySelector('.nav-right').innerHTML = `<button class="btn-ghost-sm">My List</button>`;
+}
+function handleRegister(){
+  showToast('🎉','Account created successfully!');
+  closeAuth();
+  document.querySelector('.nav-right').innerHTML = `<button class="btn-ghost-sm">My List</button>`;
+}
+
+/* ─── STORE / BUY ─── */
+function buyProduct(product, price){
+  const msg = `Hello, I'd like to subscribe to the ${product}. Price: ${price}`;
+  const url = `https://wa.me/255656659537?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+
+/* ─── PAGE NAVIGATION ─── */
+function showPage(page, linkEl){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  if(linkEl) linkEl.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function scrollToSection(id){
+  showPage('home', document.querySelector('.nav-links a'));
+  setTimeout(()=>{
+    const el = document.getElementById(id);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+  }, 100);
+}
+
+function toggleMob(){
+  document.getElementById('mobnav').classList.toggle('open');
+}
+
+/* ─── TOAST ─── */
+function showToast(icon, msg){
+  const toast = document.getElementById('toast');
+  document.getElementById('toastIcon').textContent = icon;
+  document.getElementById('toastMsg').textContent = msg;
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'), 3500);
+}
+
+/* ─── OVERLAYS CLOSER ─── */
+document.getElementById('movieModal').addEventListener('click',function(e){ if(e.target === this) closeModal(); });
+document.getElementById('authModal').addEventListener('click',function(e){ if(e.target === this) closeAuth(); });
+
+/* INIT */
+renderTrending();
+renderFeatured();
+</script>
+</body>
+</html>
